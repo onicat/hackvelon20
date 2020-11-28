@@ -17,7 +17,7 @@ function App() {
     <Router>
       <div className={classes.root}>
         <Switch>
-          <Route path='/registration/:id'>
+          <Route path='/registration/:channelId/:userId'>
             <RegistrationView/>
           </Route>
         </Switch>

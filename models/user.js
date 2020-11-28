@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
   about: String,
   gender: String,
   preference: String,
-  inSearch: Boolean
+  inSearch: Boolean,
+  talkWith: String || null,
+  channelId: String
 });
 
 const User = mongoose.model('User', userSchema);

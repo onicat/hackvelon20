@@ -25,13 +25,13 @@ const useStyles = makeStyles(theme => ({
 
 const Registration = () => {
   const classes = useStyles();
-  const { id } = useParams();
+  const { userId, channelId } = useParams();
 
   const [name, setName] = React.useState('');
   const [city, setCity] = React.useState('');
   const [about, setAbout] = React.useState('');
   const [tags, setTags] = React.useState('');
-  const [birthDate, setbirthDate] = React.useState(new Date());
+  const [birthDate, setBirthDate] = React.useState(new Date());
   const [gender, setGender] = React.useState('female');
   const [preference, setPreference] = React.useState('female');
 
@@ -52,15 +52,15 @@ const Registration = () => {
   };
 
   const handleBirthDateChange = (date) => {
-    setbirthDate(date);
+    setBirthDate(date);
   };
 
   const handleGenderChange = (event) => {
-    setPreference(event.target.value);
+    setGender(event.target.value);
   };
 
   const handlePreferenceChange = (event) => {
-    setGender(event.target.value);
+    setPreference(event.target.value);
   };
 
   const sendData = async () => {
@@ -70,7 +70,8 @@ const Registration = () => {
         'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify({
-        id,
+        userId,
+        channelId,
         name,
         city,
         about,
@@ -124,7 +125,6 @@ const Registration = () => {
             <RadioGroup value={gender} onChange={handleGenderChange}>
               <FormControlLabel control={<Radio/>} label='Мужской' value='female'/>
               <FormControlLabel control={<Radio/>} label='Женский' value='male'/>
-              <FormControlLabel control={<Radio/>} label='Другой' value='other'/>
             </RadioGroup>
           </FormControl>
           <FormControl className={classes.element}>
