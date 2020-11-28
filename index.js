@@ -114,6 +114,12 @@ discordClient.on('message', async function(mes) {
       const interlocutor = await User.findOne({discordId: user.talkWith});
 
       discordClient.channels.cache.get(interlocutor.channelId).send(user.name + ': ' + mes.content);
+      
+      if (mes.attachments.size) {
+        for (let attachment of mes.attachments.values()) {
+          discordClient.channels.cache.get(interlocutor.channelId).send(attachment);
+        }
+      }
     }
   }
 
