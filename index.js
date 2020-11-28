@@ -25,7 +25,6 @@ db.once('open', function() { console.log('Connected successfully to MongoDB') })
 
 const prefix = '!';
 const discordClient = new Discord.Client();
-const timeout = 600000;
 
 discordClient.on('message', async function(mes) {
   if (mes.author.bot) return; 
@@ -90,9 +89,26 @@ discordClient.on('message', async function(mes) {
   
         discordClient.channels.cache.get(channelId).send('Bot: Ты вышел из поиска и покинул все беседы');
       }
+      case '!help': {
+        discordClient.channels.cache.get(channelId).send(`Bot: доступные команды:
+        !help - список всех команд
+        !hello - "привет" от бота (проверка на работоспособность)
+        !reg - перейти на страницу с регистрацией
+        !start - найти собеседника
+        !out - выйти из беседы или из поиска
+        `);
+        break;
+      }
+      default: {
+        discordClient.channels.cache.get(channelId).send('Bot: Такой команды не найдено');
+      }
     }
   } else {
-    const user = await User.findOne({discordId: userId});
+    const user = await User.findOneAndUpdate({
+      discordId: userId
+    }, {
+      lastMessageAt: mes.createdTimestamp
+    });
 
     if (user.talkWith) {
       const interlocutor = await User.findOne({discordId: user.talkWith});
@@ -129,7 +145,8 @@ app.post('/user/info', (req, res) => {
     preference,
     inSearch: false,
     talkWith: null,
-    channelId
+    channelId,
+    lastMessageAt: null
   });
 
   res.send();
@@ -142,6 +159,7 @@ app.listen(port, () => {
 // Agenda
 
 const agendaDbAddress = 'mongodb://localhost/agendaJobs';
+const userSleepTimeout = 600000;
 
 const agenda = new Agenda({db: {address: agendaDbAddress}});
 
@@ -150,7 +168,6 @@ agenda.define('search for an interlocutor', async job => {
 
   shuffle(usersInSearch);
 
-console.log(usersInSearch);
   while (usersInSearch.length) {
     const user = usersInSearch.pop();
     const interlocutorIndex = usersInSearch.findIndex(userInSearch => {
@@ -174,13 +191,8 @@ console.log(usersInSearch);
   }
 });
 
-agenda.define('check for inaction', async job => {
-
-});
-
 (async function() {
   await agenda.start();
 
   await agenda.every('15 seconds', 'search for an interlocutor');
-  await agenda.every('2 minutes', 'check for inaction');
 })();

@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
   preference: String,
   inSearch: Boolean,
   talkWith: String || null,
-  channelId: String
+  channelId: String,
+  lastMessageAt: String || null
 });
 
 const User = mongoose.model('User', userSchema);

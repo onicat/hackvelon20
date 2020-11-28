@@ -64,23 +64,29 @@ const Registration = () => {
   };
 
   const sendData = async () => {
-    await fetch(serverAddress + '/user/info', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify({
-        userId,
-        channelId,
-        name,
-        city,
-        about,
-        tags,
-        birthDate,
-        gender,
-        preference
-      })
-    });
+    try {
+      await fetch(serverAddress + '/user/info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          userId,
+          channelId,
+          name,
+          city,
+          about,
+          tags,
+          birthDate,
+          gender,
+          preference
+        })
+      });
+
+      alert('Регистрация прошла успешно');
+    } catch(e) {
+      alert(e.message);
+    }
   };
 
   return (
