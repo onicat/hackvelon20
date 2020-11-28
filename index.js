@@ -88,6 +88,7 @@ discordClient.on('message', async function(mes) {
         }
   
         discordClient.channels.cache.get(channelId).send('Bot: Ты вышел из поиска и покинул все беседы');
+        break;
       }
       case '!help': {
         discordClient.channels.cache.get(channelId).send(`Bot: доступные команды:
@@ -165,7 +166,6 @@ app.listen(port, () => {
 // Agenda
 
 const agendaDbAddress = 'mongodb://localhost/agendaJobs';
-const userSleepTimeout = 600000;
 
 const agenda = new Agenda({db: {address: agendaDbAddress}});
 
@@ -197,8 +197,29 @@ agenda.define('search for an interlocutor', async job => {
   }
 });
 
+agenda.define('check interests', async job => {
+  const talkingUsers = await User.find({talkWith: {$ne: null}});
+
+  for (let talkingUser of talkingUsers) {
+    if (talkingUser.tags.length === 0) continue;
+    
+    const interlocutor = await User.findOne({discordId: talkingUser.talkWith});
+    const randomTag = shuffle([...talkingUser.tags]).pop();
+
+    discordClient.channels.cache.get(interlocutor.channelId).send(`Bot:
+      На основе тегов я понял, что ${talkingUser.name} любит ${randomTag}. Поговорите об этом ;)
+    `);
+
+    discordClient.channels.cache.get(interlocutor.channelId).send(`Bot:
+      А ещё я могу рассылать рекламу и рекрутировать ребят в Аквелон
+    `);
+  }
+
+});
+
 (async function() {
   await agenda.start();
 
   await agenda.every('15 seconds', 'search for an interlocutor');
+  await agenda.every('50 seconds', 'check interests');
 })();
